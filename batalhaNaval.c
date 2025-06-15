@@ -4,8 +4,8 @@
 int tabuleiro[10][10]; // 0 = água, 3 = navio
 int escolha, l, c, opcao = 0; // Variáveis para interações
 
+// Inicializa o tabuleiro com "0" (água)
 void inicializar_tabuleiro() {
-    // Inicializa o tabuleiro com "0" (água)
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
             tabuleiro[i][j] = 0;
@@ -13,18 +13,19 @@ void inicializar_tabuleiro() {
     }
 }
 
+// Exibe o tabuleiro completo no console
 void mostrar_tabuleiro() {
-    printf("Tabuleiro de batalha naval:\n");
+    printf("\nTabuleiro de batalha naval:\n");
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
-            printf("%d ", tabuleiro[i][j]); // Exibe matriz com números
+            printf("%d ", tabuleiro[i][j]);
         }
         printf("\n");
     }
 }
 
+// Verifica se há espaço disponível para posicionar o navio
 int verificar_espaco(int linha, int coluna, int direcao) {
-    // Verifica se há espaço disponível para o navio, evitando sobreposição
     for (int i = 0; i < 3; i++) { // Navios têm tamanho 3
         if (direcao == 1 && (linha + i >= 10 || tabuleiro[linha + i][coluna] != 0)) return 0; // Vertical
         if (direcao == 2 && (coluna + i >= 10 || tabuleiro[linha][coluna + i] != 0)) return 0; // Horizontal
@@ -33,30 +34,50 @@ int verificar_espaco(int linha, int coluna, int direcao) {
     return 1;
 }
 
+// Adiciona navios ao tabuleiro garantindo que não haja sobreposição
 void adicionar_navio() {
     for (int n = 0; n < 4; n++) { // Adiciona quatro navios
-        printf("Navio %d - Escolha o posicionamento [1] Vertical, [2] Horizontal, [3] Diagonal:\n", n + 1);
-        scanf("%d", &escolha);
+        int valido = 0;
 
-        printf("Digite a linha (0 a 9) para posicionar:\n");
-        scanf("%d", &l);
-        printf("Digite a coluna (0 a 9) para posicionar:\n");
-        scanf("%d", &c);
+        while (!valido) { 
+            printf("Navio %d - Escolha o posicionamento [1] Vertical, [2] Horizontal, [3] Diagonal Direita, [4] Diagonal Esquerda:\n", n + 1);
+            scanf("%d", &escolha);
 
-        if (l >= 0 && l < 10 && c >= 0 && c < 10 && verificar_espaco(l, c, escolha)) {
+            if (escolha < 1 || escolha > 4) {
+                printf("Opção inválida! Escolha entre [1], [2], [3] ou [4].\n");
+                continue;
+            }
+
+            printf("Digite a linha (0 a 9) para posicionar:\n");
+            scanf("%d", &l);
+            printf("Digite a coluna (0 a 9) para posicionar:\n");
+            scanf("%d", &c);
+
+            if (l < 0 || l >= 10 || c < 0 || c >= 10) {
+                printf("Coordenadas inválidas! Tente novamente.\n");
+                continue;
+            }
+
+            if (!verificar_espaco(l, c, escolha)) {
+                printf("Posição ocupada ou espaço insuficiente! Tente novamente.\n");
+                continue;
+            }
+
+            // Adiciona o navio na matriz
             for (int i = 0; i < 3; i++) {
                 if (escolha == 1) tabuleiro[l + i][c] = 3; // Vertical
                 else if (escolha == 2) tabuleiro[l][c + i] = 3; // Horizontal
-                else if (escolha == 3) tabuleiro[l + i][c + i] = 3; // Diagonal
+                else if (escolha == 3) tabuleiro[l + i][c + i] = 3; // Diagonal Direita
+                else if (escolha == 4) tabuleiro[l + i][c - i] = 3; // Diagonal Esquerda
             }
+
             printf("Navio %d adicionado!\n", n + 1);
-        } else {
-            printf("Posição inválida ou espaço ocupado! Tente novamente.\n");
-            n--; // Repetir tentativa
+            valido = 1;
         }
     }
 }
 
+// Função principal do jogo
 int main() {
     inicializar_tabuleiro();
 
@@ -86,10 +107,3 @@ int main() {
 
     return 0;
 }
-
-
-//int main() {
-    // Nível Aventureiro - Expansão do Tabuleiro e Posicionamento Diagonal
-    // Sugestão: Expanda o tabuleiro para uma matriz 10x10 (Ex: int tabuleiro[10][10];)
-    // Sugestão: Posicione quatro navios no tabuleiro, incluindo dois na diagonal.
-    // Sugestão: Exiba o tabuleiro completo no console, mostrando 0 para posições vazias e 3 para posições ocupadas.
